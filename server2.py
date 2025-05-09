@@ -8,10 +8,12 @@ CORS(app)
 
 # Connect to MySQL
 db = mysql.connector.connect(
-    host="localhost",
-    user="Naits_Admin",           # your mysql username
-    password="D45192091425Ea@", # your mysql password
-    database="naits_users"
+host="sql8.freesqldatabase.com",
+        user="sql8777806",
+        password="469dV5fzXa",
+        port= 3306,
+        database="sql8777806",
+        autocommit=True
 )
 
 # =========================================
@@ -56,6 +58,7 @@ def admin_login():
 # Run the Server
 # =========================================
 
-
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    import os
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.1', port=port)
