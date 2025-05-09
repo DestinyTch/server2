@@ -2,19 +2,41 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import mysql.connector
-
+from mysql.connector import Error
 app = Flask(__name__)
 CORS(app)
 
 # Connect to MySQL
-db = mysql.connector.connect(
-host="sql8.freesqldatabase.com",
+def make_db_connection():
+    return mysql.connector.connect(
+        host="sql8.freesqldatabase.com",
         user="sql8777806",
         password="469dV5fzXa",
         port= 3306,
         database="sql8777806",
         autocommit=True
-)
+    )
+
+# initial connection
+db = make_db_connection()
+
+def reconnect_db():
+    global db
+    try:
+        if db.is_connected():
+            db.close()
+    except Exception:
+        pass
+    db = make_db_connection()
+
+def get_cursor():
+    global db
+    try:
+        db.ping(reconnect=True, attempts=3, delay=2)
+    except Error as e:
+        print(f"[DB] Lost connection: {e}. Reconnecting...")
+        reconnect_db()
+    return db.cursor(dictionary=True)
 
 # =========================================
 # Admin Login Route
@@ -61,4 +83,4 @@ def admin_login():
 if __name__ == '__main__':
     import os
     port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.1', port=port)
